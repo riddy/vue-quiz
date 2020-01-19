@@ -1,0 +1,225 @@
+<html>
+  <body>
+    <div id="app">
+      <h1>{{ quiz.title }}</h1>
+      <!-- welcome page -->
+      <div v-show="-1 === questionIndex">
+        <img src="special.png" width="800" />
+        <div>
+          <button v-on:click="next">
+            Start
+          </button>
+        </div>
+      </div>
+      <!-- index is used to check with current question index -->
+      <div v-for="(category, index) in quiz.categories">
+        <!-- Hide all questions, show only the one with index === to current question index -->
+        <div v-show="index === questionIndex">
+          <h2>{{ category.title }}</h2>
+
+          <ol>
+            <li v-for="question, index in category.questions">
+              <label for="skill"> {{question}}</label>
+              <!-- The radio button has three new directives -->
+              <!-- v-bind:value sets "value" to "true" if the response is correct -->
+              <!-- v-bind:name sets "name" to question index to group answers by question -->
+              <!-- v-model creates binding with userResponses -->
+
+              <input
+                id="category.skill"
+                type="range"
+                min="0"
+                max="10"
+                v-bind:name="category.skill"
+                v-model="userResponses[category.skill][index]"
+              />
+            </li>
+          </ol>
+          <!-- The two navigation buttons -->
+          <!-- Note: prev is hidden on first question -->
+          <button v-if="questionIndex > 0" v-on:click="prev">
+            prev
+          </button>
+          <button v-on:click="next">
+            next
+          </button>
+        </div>
+      </div>
+
+      <!--Result page-->
+      <div v-show="questionIndex === quiz.categories.length">
+        <h2>
+          Thanks for your time!
+        </h2>
+        <p>
+          Your most developed skill seems to be {{score().name}}.
+        </p>
+
+        <img :src="getImgUrl()" v-bind:alt="pic">
+        <div v-if="'Strength'===score().name">
+          <p>
+            You know about a strong backbone! Seems you be an outstanding
+            backend expert!
+          </p>
+        </div>
+        <div v-if="'Perception'===score().name">
+          You have a greate awareness! You master the world of JavaScript
+          frameworks to provide the best possible experience!
+        </div>
+        <div v-if="'Endurance'===score().name">
+          You are a resilient type of person! Without DevOps no system will run
+          and be updated in production in a way that let developers sleep well
+          and customers trust the solution!
+        </div>
+        <div v-if="'Charisma'===score().name">
+          Nobody can resist your charm! You are articulate both verbal and
+          written, distribution of knowledge for you is as natural as asking for
+          advice.
+        </div>
+        <div v-if="'Intelligence'===score().name">
+          Wow, what a high IQ! Or is it the one of your artificial system?
+          Either way, without mastering databases and big data we'll never
+          provide additional features based on what we collect every day!
+        </div>
+        <div v-if="'Agility'===score().name">
+          Scrum! But... nobody is perfect, but you adapt to changing
+          requirements in a professional way, because agile dosen't mean 'no
+          processes'. Keep fighting for the best delivered incerement possible!
+        </div>
+        <div v-if="'Luck'===score().name">
+          Feeling lucky? You know that with a good team spirit, life is only
+          half as bad. With SOLID, KISS and YAGNI in mind your future-self will
+          be able to cope with whatever comes up.
+        </div>
+      </div>
+    </div>
+
+    <!-- Load Vue script -->
+    <script src="https://vuejs.org/js/vue.js"></script>
+    <!-- On load, init Vue -->
+    <script>
+      window.onload = function() {
+        // Create a quiz object with a title and two questions.
+        // A question has one or more answer, and one or more is valid.
+        var quiz = {
+          title: "Software Engineering Practice - Skill quiz",
+          categories: [
+            {
+              title: "Let's start with 'Strength'",
+              skill: "Strength",
+              questions: [
+                "I'm experienced with cloud development and IoT devices",
+                "I have worked several years with backend framworks",
+                "Good architecture is crucial to bring the best result for the customer's requirements."
+              ]
+            },
+            {
+              title: "Next: 'Perception'",
+              skill: "Perception",
+              questions: [
+                "Not happy before the customer get's the best possible experience!",
+                "Have already used tons of UI frameworksHave already used tons of UI frameworks (or few extensively)",
+                "I'm up to date with all kind of new frontend technologies and can tell about traid-offs and advantages."
+              ]
+            },
+            {
+              title: "Continue with 'Endurance'",
+              skill: "Endurance",
+              questions: [
+                "If I need to do something twice, I'll automate it. This is true especially for our toolchain.",
+                "I provoke testing, as it is the base for good quality, maintainabilty and reliability.",
+                "Only with metric-graphs and well defined alerts I can be sleep well on the knowledge that my solution runs smoothly."
+              ]
+            },
+            {
+              title: "Nice job so far! Tell me about your 'Charisma' now",
+              skill: "Charisma",
+              questions: [
+                "My work is well documented and naming makes it easy for others to read the code",
+                "I am a good listener and regulary share experiences with others.",
+                "I arrange discussions with the right people if something is not clear to me or the team"
+              ]
+            },
+            {
+              title: "What about 'Intelligence'",
+              skill: "Intelligence",
+              questions: [
+                "I can explain in detail what is AI and when to use neural networks",
+                "I'm an expert for databases",
+                "Collecting and processing a huge bunch of data is something I've done a lot"
+              ]
+            },
+            {
+              title: "Almost done after 'Agility'",
+              skill: "Agility",
+              questions: [
+                "Scrum and/or Kanban are my daily business",
+                "Refactoring is daily business and will be done regulary",
+                "I can adapt to challenges and new situations quickly and embrace it along the way"
+              ]
+            },
+            {
+              title: "Last I want to know about your attitude with 'Luck'",
+              skill: "Luck",
+              questions: [
+                "I am optimistic, upbeat, and have a positive outlook",
+                "Think big, start small.  I'll analyze and solve the problems as they occour.",
+                "Never stop learning something new"
+              ]
+            }
+          ]
+        };
+
+        new Vue({
+          el: "#app",
+          data: {
+            quiz: quiz,
+            // Store current question index
+            questionIndex: -1,
+            userResponses: {
+              Strength: [0, 0, 0],
+              Perception: [0, 0, 0],
+              Endurance: [0, 0, 0],
+              Charisma: [0, 0, 0],
+              Intelligence: [0, 0, 0],
+              Agility: [0, 0, 0],
+              Luck: [0, 0, 0]
+            }
+          },
+          // The view will trigger these methods on click
+          methods: {
+            // Go to next question
+            next: function() {
+              this.questionIndex++;
+            },
+            // Go to previous question
+            prev: function() {
+              this.questionIndex--;
+            },
+            // Return "true" count in userResponses
+            score: function() {
+              let mostDevelopedSkill = {
+                name: "nothing. You're talentless. Try again",
+                value: 0
+              };
+
+              for (let [key, value] of Object.entries(this.userResponses)) {
+                let skillLevel =
+                  parseInt(value[0]) + parseInt(value[1]) + parseInt(value[2]);
+                if (skillLevel > mostDevelopedSkill.value) {
+                  mostDevelopedSkill.name = key;
+                  mostDevelopedSkill.value = skillLevel;
+                }
+              }
+
+              return mostDevelopedSkill;
+            },
+            getImgUrl: function() {
+              return "./" + this.score().name + ".jpg";
+            }
+          }
+        });
+      };
+    </script>
+  </body>
+</html>
